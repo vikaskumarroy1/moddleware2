@@ -3,7 +3,16 @@ const express=require("express");
 const app=express();
 
 const loggingMiddleware=(req,res,next)=>{
-    console.log("vikas roy", new Date());
+      const startTime = Date.now();
+  const { method, url } = req;
+  const timestamp = new Date().toISOString();
+
+  res.on('finish', () => {
+    const endTime = Date.now();
+    const timeTaken = endTime - startTime;
+    console.log(`[${timestamp}] ${method} ${url} - ${timeTaken}ms`);
+  });
+       
     next();
 
 }
@@ -36,7 +45,7 @@ const products=[{
 }
 ];
 
-app.get("/api/v1/get-products/:id",(req,res,next)=>{
+app.get("/api/v1/get-products/:id",(req,res)=>{
     const product=products.find((product)=>product.id==req.params.id);
     if(product){
         res.json({
@@ -51,6 +60,12 @@ app.get("/api/v1/get-products/:id",(req,res,next)=>{
     }
 })
    
+app.post("/app/v1/get-orders",(req,res)=>{
+    res.json({
+        success:true,
+        message:"Dummt get orders API"
+    })
+})
 app.listen(8080,()=>{
     console.log("server is running");
 })
